@@ -9,3 +9,11 @@ export const State = Annotation.Root({
 });
 
 export type State = typeof State.State;
+
+export class StateGraph {
+    messages: Array<BaseMessage>
+
+    constructor() {
+        this.messages = []
+    }
+}
