@@ -6,7 +6,7 @@ import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 
 export class Researcher extends BaseAgent {
     prompt: SystemMessage;
-    graph: CompiledStateGraph<string, string, string, StateDefinition, StateDefinition, StateDefinition> | undefined
+    graph: CompiledStateGraph<State, State, string, StateDefinition, StateDefinition, StateDefinition> | undefined
 
     constructor() {
         super('Recearcher');
@@ -38,10 +38,10 @@ export class Researcher extends BaseAgent {
         }
 
         const shouldCallTool = (state: State) => {
-            const message = state['messages'][state['messages'].length - 1]
+            const message = state['messages'][state['messages'].length - 1] as AIMessage
 
-            if (message?.tool_calls.length > 0) {
-                return message?.tool_calls[0].name
+            if (message.tool_calls && message.tool_calls.length > 0) {
+                return message.tool_calls[0].name
             }
 
             return END
