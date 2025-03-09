@@ -6,7 +6,6 @@ import { ChatGroq } from '@langchain/groq';
 import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
 import { Researcher } from './agents/researcher_.js';
-import { StateGraph } from './states/state.js';
 
 // Define the tools for the agent to use
 const agentModel = new ChatGroq({
@@ -17,8 +16,6 @@ const agentModel = new ChatGroq({
 // Initialize memory to persist state between graph runs
 const agentCheckpointer = new MemorySaver();
 const researcher = new Researcher()
-researcher.initTools()
-researcher.initGraph()
 
 //save the graph draw
 // const graph = await researcher.graph?.getGraphAsync()

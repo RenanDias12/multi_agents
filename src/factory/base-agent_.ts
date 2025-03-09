@@ -3,6 +3,7 @@ import { BaseToolkit } from "@langchain/core/tools";
 import { ChatGroq } from '@langchain/groq';
 import { ChatOpenAI } from "@langchain/openai";
 import { State } from "../states/state.js";
+import { Runnable } from "@langchain/core/runnables";
 
 export abstract class BaseAgent {
     name: string;
@@ -17,12 +18,13 @@ export abstract class BaseAgent {
             throw new Error('LLM is not defined');
         }
 
-        const GROQ_LLMS = ['llama', 'deepseek']
+        const GROQ_LLMS = ['llama', 'deepseek', 'gemma']
         if (GROQ_LLMS.some(llm => process.env.LLM?.includes(llm))) {
             this.llm = new ChatGroq({
                 apiKey: process.env.GROQ_API_KEY,
                 modelName: process.env.LLM,
-                temperature: parseFloat(process.env.LLM_TEMPERATURE)
+                temperature: parseFloat(process.env.LLM_TEMPERATURE),
+                cache: false
             });
         }
         else if (process.env.LLM.includes('gpt')) {

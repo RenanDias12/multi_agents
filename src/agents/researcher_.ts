@@ -1,29 +1,36 @@
 import { BaseAgent } from "../factory/base-agent_.js";
-import { AIMessage, SystemMessage } from "@langchain/core/messages";
-import { StateGraph, Command, END, START, CompiledStateGraph, StateDefinition } from "@langchain/langgraph";
+import { AIMessage, SystemMessage, HumanMessage } from "@langchain/core/messages";
+import { StateGraph, END, START, CompiledStateGraph, StateDefinition } from "@langchain/langgraph";
 import { State } from "../states/state.js";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
+import { Runnable } from "@langchain/core/runnables";
 
 export class Researcher extends BaseAgent {
     prompt: SystemMessage;
-    graph: CompiledStateGraph<State, State, string, StateDefinition, StateDefinition, StateDefinition> | undefined
+    graph!: CompiledStateGraph<State, any, "__start__", any, any, StateDefinition>;
+    // 'You are a researcher agent, first you will create a tool call and then when you receive a ToolMessage you will return a response'
 
     constructor() {
         super('Recearcher');
-        this.prompt = new SystemMessage({
-            content: 'You are a researcher agent, ALWAYS use your tool and return a response.',
-        });
+        const dateOptions: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+        this.prompt = new SystemMessage(
+            `You are a researcher agent, and today is ${new Date().toLocaleDateString('en-US', dateOptions)}`
+        );
+
+        this.initTools();
+        this.initGraph();
     }
 
     initTools(): void {
         const tool = new TavilySearchResults({ maxResults: 3 })
-        this.llm.bindTools([tool])
+        this.llm = this.llm.bindTools([tool]) as any;
         this.tools[tool.name] = tool
     }
 
     initGraph(): void {
         const researcherNode = async (state: State) => {
-            const messages = [this.prompt, state.messages].flat();
+            const messages = [this.prompt, ...state.messages];
+            console.log(messages)
             const response = await this.llm.invoke(messages);
 
             return { messages: response };
@@ -46,8 +53,8 @@ export class Researcher extends BaseAgent {
 
             return END
         }
-
         const graph = new StateGraph(State);
+
         graph.addNode('researcher', researcherNode);
         graph.addNode('tavily_search_results_json', tavilyNode);
 
