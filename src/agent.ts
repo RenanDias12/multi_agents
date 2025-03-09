@@ -5,7 +5,7 @@ import * as path from 'path';
 import { ChatGroq } from '@langchain/groq';
 import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage } from "@langchain/core/messages";
-import { Researcher } from './agents/researcher_.js';
+import { ResearcherAgent } from './agents/researcher.js';
 
 // Define the tools for the agent to use
 const agentModel = new ChatGroq({
@@ -15,20 +15,12 @@ const agentModel = new ChatGroq({
 
 // Initialize memory to persist state between graph runs
 const agentCheckpointer = new MemorySaver();
-const researcher = new Researcher()
+const researcher = new ResearcherAgent();
+// const msg = new HumanMessage('Qual a ultima versão do Node.js?');
+// const response = await researcher.invoke(
+// { messages: [msg] },
+// { checkpointSaver: agentCheckpointer }
+// );
+// console.log(response)
 
-//save the graph draw
-// const graph = await researcher.graph?.getGraphAsync()
-// if (graph !== undefined) {
-//     const imageBuffer = await graph.drawMermaidPng();
-//     const graphDir = 'src/graph';
-//     if (!fs.existsSync(graphDir)) {
-//         fs.mkdirSync(graphDir);
-//     }
-//     const imagePath = path.join(graphDir, 'graph2.png');
-//     fs.writeFileSync(imagePath, Buffer.from(await imageBuffer.bytes()));
-
-// }
-const msg = new HumanMessage('Qual a ultima versão do Node.js?')
-const response = await researcher.invoke({ messages: [msg] })
-console.log(response)
+await researcher.drawGraph()

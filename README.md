@@ -1,4 +1,4 @@
-# 🤖<- Multi Agents Project ->🤖
+# 🤖 Multi Agents Project
 
 Welcome to the Multi Agents Project! This project is designed to develop and study the behavior of multiple agents in a langgraph graph.
 
@@ -36,7 +36,7 @@ To install the project, follow these steps:
     ```
 3. Install the required dependencies:
     ```bash
-    pip install -r requirements.txt
+    npm install
     ```
 
 ## Usage
